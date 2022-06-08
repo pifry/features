@@ -5,16 +5,22 @@ import requests
 import os
 import logging
 import zipfile
+import csv
+from random import choices
 
 class Dataset:
 
     LOCATION = Path("datasets")
 
     def __init__(self) -> None:
-        pass
+        self.movies_list = None
 
     def fetch(self):
         raise NotImplementedError
+
+    def random_part(self, fraction):
+        for x in choices(self.movies_list, k=int(len(self.movies_list)*fraction)):
+            yield x 
 
 
 class KonVidDataset(Dataset):
@@ -31,6 +37,7 @@ class KonVidDataset(Dataset):
         os.makedirs(dir, exist_ok=True)
         file_path = self.url_to_local(url)
         if file_path.is_file():
+            #file_path.stat().st_size == 
             logging.warning(f"{file_path} already exists. Skipping download.")
             return
         response = requests.get(url, stream=True)
@@ -42,11 +49,22 @@ class KonVidDataset(Dataset):
                 handle.write(data)
         progress_bar.close()
 
-    def unzip_file(self, url):        
-        with zipfile.ZipFile(self.url_to_local(url), 'r') as zip_ref:
-            zip_ref.extractall(self.LOCATION)
+    def unzip_file(self, url):   
+        file_path = self.url_to_local(url)
+        self.movies_dir = self.LOCATION / file_path.stem
+        if self.movies_dir.is_dir():
+            #file_path.stat().st_size == 
+            logging.warning(f"{self.movies_dir} already exists. Skipping extraction.")
+            return  
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            zip_ref.extractall(self.movies_dir)
+
+    def load_movies_list(self):
+        score_file = open(self.url_to_local(self.score_url), 'r')
+        self.movies_list = [(name, mean_opinion, self.movies_dir / name) for name, mean_opinion, raw_mean_opinion in csv.reader(score_file, delimiter=',')]
 
     def fetch(self):
         self.fetch_file(self.score_url, self.LOCATION)
         self.fetch_file(self.data_url, self.LOCATION)
         self.unzip_file(self.data_url)
+        self.load_movies_list()
