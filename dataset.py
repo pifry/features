@@ -1,12 +1,16 @@
 
-from pathlib import Path
-from tqdm import tqdm
-import requests
-import os
-import logging
-import zipfile
 import csv
+import logging
+import os
+import zipfile
+from pathlib import Path
 from random import choices
+
+import requests
+from tqdm import tqdm
+
+from video import Video
+
 
 class Dataset:
 
@@ -16,11 +20,25 @@ class Dataset:
         self.movies_list = None
 
     def fetch(self):
+        """
+        Fetch is responsible for:
+         - creating movie files in local storage
+         - attribute movies_list which is enuberable and each element is (movie_name, score, path_to_movie_file)
+        """
         raise NotImplementedError
 
-    def random_part(self, fraction):
-        for x in choices(self.movies_list, k=int(len(self.movies_list)*fraction)):
-            yield x 
+    def random_part(self, fraction=None, count=None):
+        if fraction:
+            k = int(len(self.movies_list)*fraction)
+        elif count:
+            k = count
+        else:
+            k=len(self.movies_list)
+
+        k = min(len(self.movies_list), k)
+
+        for name, score, path in choices(self.movies_list, k=k):
+            yield Video(path, name=name, score=score) 
 
 
 class KonVidDataset(Dataset):
@@ -60,6 +78,9 @@ class KonVidDataset(Dataset):
             zip_ref.extractall(self.movies_dir)
 
     def load_movies_list(self):
+        """
+        Creates attribute movies_list which is enuberable and each element is (movie_name, score, path_to_movie_file)
+        """
         score_file = open(self.url_to_local(self.score_url), 'r')
         self.movies_list = [(name, mean_opinion, self.movies_dir / name) for name, mean_opinion, raw_mean_opinion in csv.reader(score_file, delimiter=',')]
 

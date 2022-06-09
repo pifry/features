@@ -1,10 +1,12 @@
+import logging
+
 from dataset import KonVidDataset
 from video import Video
-import logging
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)
     #KonVid150kA = KonVidDataset("http://datasets.vqa.mmsp-kn.de/archives/k150ka.zip", "http://datasets.vqa.mmsp-kn.de/archives/k150ka_scores.csv") # ~176GB
     KonVid150kB = KonVidDataset("http://datasets.vqa.mmsp-kn.de/archives/k150kb.zip", "http://datasets.vqa.mmsp-kn.de/archives/k150kb_scores.csv") # ~2GB
-    for name, score, path in KonVid150kB.random_part(0.01):
-        v = Video(path)
+    for video in KonVid150kB.random_part(count=1):
+        print(video)
+        video.play()
