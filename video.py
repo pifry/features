@@ -29,9 +29,11 @@ class Video:
         frame = np.flip(frame, axis=2)
         self.data = np.array([frame])
 
-        progress_bar = tqdm(total=cap.get(cv2.CAP_PROP_FRAME_COUNT), unit='frames', unit_scale=True)
+        progress_bar = tqdm(
+            total=cap.get(cv2.CAP_PROP_FRAME_COUNT), unit="frames", unit_scale=True
+        )
 
-        while(cap.isOpened()):
+        while cap.isOpened():
             ret, frame = cap.read()
             frame = np.array([frame])
             if ret:
