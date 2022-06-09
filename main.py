@@ -1,7 +1,6 @@
 import logging
 
 from dataset import KonVidDataset
-from video import Video
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)
