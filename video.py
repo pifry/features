@@ -8,12 +8,23 @@ from tqdm import tqdm
 from presentation import Animation
 
 
+def need_to_load_data(f):
+    def wrapper(*args):
+        self = args[0]
+        if not isinstance(self.data, np.ndarray):
+            self._load()
+        return f(*args)
+
+    return wrapper
+
+
 class Video:
     def __init__(self, path, name=None, score=None) -> None:
         self.path = path
         self.name = name
         self.score = score
         self.data = None
+        self._fps = None
 
     def __repr__(self) -> str:
         return f"{self.name}: {self.score} ({self.path})"
@@ -23,6 +34,7 @@ class Video:
         Decode video and load raw data into memory
         """
         cap = cv2.VideoCapture(str(self.path))
+        self._fps = cap.get(cv2.CAP_PROP_FPS)
         ret, frame = cap.read()
         if not ret:
             return
@@ -45,10 +57,18 @@ class Video:
         progress_bar.close()
         logging.info(f"Matrix {self.data.shape} loaded into memory")
 
-    def play(self):
-        if not self.data:
-            self._load()
-        Animation.play_sample(self.data, description=str(self))
+    @need_to_load_data
+    def get_fps(self):
+        return self._fps
 
-    def show(self):
-        pass
+    @need_to_load_data
+    def get_width(self):
+        return self.data.shape[2]
+
+    @need_to_load_data
+    def get_height(self):
+        return self.data.shape[1]
+
+    @need_to_load_data
+    def play(self):
+        Animation.play_sample(self.data, description=str(self))
