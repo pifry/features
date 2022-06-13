@@ -2,11 +2,12 @@ import numpy as np
 
 
 class Features:
+    """
+    Implement new feature by defining method with name starting with feature_ that returns a scalar.
+    """
+
     def __init__(self) -> None:
         self.features_dict = None
-
-    def feature_simple(self, video):
-        return 1.0
 
     def feature_fps(self, video):
         return video.get_fps()
