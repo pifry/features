@@ -46,14 +46,9 @@ class Features:
 
     def feature_intensity_histogram_cdf_pearson(self, video):
         hist, bins = video.get_y_histogram()
-        # import pdb; pdb.set_trace()
         cdf = np.cumsum(hist)
-        pearson = np.corrcoef(cdf, bins)
-        # print(cdf)
-        import pdb
-
-        pdb.set_trace()
-        return 0
+        pearson = np.corrcoef(cdf, bins[1:])
+        return pearson[0][1]
 
     def feature_saturated_intensity(self, video):
         hist, _ = video.get_y_histogram()
