@@ -5,6 +5,8 @@ from dataset import KonVidDataset
 from tabulate import tabulate
 import argparse
 
+from features import Features
+
 
 def markdown_link(name, path):
     return f"[{name}]({path})"
@@ -53,14 +55,13 @@ if __name__ == "__main__":
         if i == opts.n:
             break
 
+        features = Features()
+
         results.append(
             {
                 "filename": html_link(video.name, video.path),
                 "score": video.score,
-                "fps": video.get_fps(),
-                "width": video.get_width(),
-                "height": video.get_height(),
-                "ratio": video.get_width() / video.get_height(),
+                **features(video),
             }
         )
 
