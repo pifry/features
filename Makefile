@@ -12,4 +12,7 @@ format: $(SRC)
 check_formatting: $(SRC)
 	$(BLACK) --check $^
 
-.PHONY: format check_formatting
+clean:
+	rm *.html *.csv
+
+.PHONY: format check_formatting clean
