@@ -1,7 +1,8 @@
 1. Quickstart
 
    - install dependencies: `pip install -r requirements` . You may want to setup virtual environment first.
-   - run python main.py -h
+   - run `python main.py -h` for detailed help
+   - example: `python main.py -n 5 --ohtml result.html --ocsv result.csv`
 
 2. Features implemented
 
