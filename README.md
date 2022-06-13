@@ -1,3 +1,6 @@
+Video Sequence Features Extractor
+=================================
+
 1. Quickstart
 
    - install dependencies: `pip install -r requirements` . You may want to setup virtual environment first.
