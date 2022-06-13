@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Features:
     def __init__(self) -> None:
         self.features_dict = None
@@ -16,6 +19,49 @@ class Features:
 
     def feature_ratio(self, video):
         return video.get_width() / video.get_height()
+
+    def feature_saturated_red(self, video):
+        hist, _ = video.get_r_histogram()
+        return hist[-1]
+
+    def feature_zero_red(self, video):
+        hist, _ = video.get_r_histogram()
+        return hist[-1]
+
+    def feature_saturated_green(self, video):
+        hist, _ = video.get_g_histogram()
+        return hist[-1]
+
+    def feature_zero_green(self, video):
+        hist, _ = video.get_g_histogram()
+        return hist[-1]
+
+    def feature_saturated_blue(self, video):
+        hist, _ = video.get_b_histogram()
+        return hist[-1]
+
+    def feature_zero_blue(self, video):
+        hist, _ = video.get_b_histogram()
+        return hist[-1]
+
+    def feature_intensity_histogram_cdf_pearson(self, video):
+        hist, bins = video.get_y_histogram()
+        # import pdb; pdb.set_trace()
+        cdf = np.cumsum(hist)
+        pearson = np.corrcoef(cdf, bins)
+        # print(cdf)
+        import pdb
+
+        pdb.set_trace()
+        return 0
+
+    def feature_saturated_intensity(self, video):
+        hist, _ = video.get_y_histogram()
+        return hist[-1]
+
+    def feature_zero_intensity(self, video):
+        hist, _ = video.get_y_histogram()
+        return hist[-1]
 
     def __call__(self, video):
         return {
