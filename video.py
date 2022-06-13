@@ -7,6 +7,8 @@ from tqdm import tqdm
 
 from presentation import Animation
 
+from skimage.metrics import peak_signal_noise_ratio
+
 
 def need_to_load_data(f):
     def wrapper(*args):
@@ -68,6 +70,10 @@ class Video:
     @need_to_load_data
     def get_height(self):
         return self.data.shape[1]
+
+    # @need_to_load_data
+    # def get_psnr(self)
+    #     return peak_signal_noise_ratio()
 
     @need_to_load_data
     def play(self):

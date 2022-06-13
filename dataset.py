@@ -4,6 +4,7 @@ import os
 import zipfile
 from pathlib import Path
 from random import choices
+from matplotlib.pyplot import ylabel
 
 import requests
 from tqdm import tqdm
@@ -37,6 +38,11 @@ class Dataset:
         k = min(len(self.movies_list), k)
 
         for name, score, path in choices(self.movies_list, k=k):
+            yield Video(path, name=name, score=score)
+
+    def items(self):
+        for name, score, path in self.movies_list:
+            print(name, score, path)
             yield Video(path, name=name, score=score)
 
 
@@ -80,13 +86,14 @@ class KonVidDataset(Dataset):
         """
         Creates attribute movies_list which is enuberable and each element is (movie_name, score, path_to_movie_file)
         """
-        score_file = open(self.url_to_local(self.score_url), "r")
-        self.movies_list = [
-            (name, mean_opinion, self.movies_dir / name)
-            for name, mean_opinion, raw_mean_opinion in csv.reader(
-                score_file, delimiter=","
-            )
-        ]
+        with open(self.url_to_local(self.score_url), "r") as score_file:
+            score_file.readline()  # Skip header
+            self.movies_list = [
+                (name, mean_opinion, self.movies_dir / name)
+                for name, mean_opinion, raw_mean_opinion in csv.reader(
+                    score_file, delimiter=","
+                )
+            ]
 
     def fetch(self):
         self.fetch_file(self.score_url, self.LOCATION)
