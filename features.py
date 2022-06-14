@@ -34,49 +34,42 @@ class Features:
         return video.get_width() / video.get_height()
 
     def feature_frame_saturated_red(self, video, point):
-        hist, _ = video.get_r_histogram()
+        hist, _ = video.get_histogram(point, "r")
         return hist[-1]
 
-    def feature_zero_red(self, video):
-        hist, _ = video.get_r_histogram()
+    def feature_frame_zero_red(self, video, point):
+        hist, _ = video.get_histogram(point, "r")
         return hist[-1]
 
-    def feature_saturated_green(self, video):
-        hist, _ = video.get_g_histogram()
+    def feature_frame_saturated_green(self, video, point):
+        hist, _ = video.get_histogram(point, "g")
         return hist[-1]
 
-    def feature_zero_green(self, video):
-        hist, _ = video.get_g_histogram()
+    def feature_frame_zero_green(self, video, point):
+        hist, _ = video.get_histogram(point, "g")
         return hist[-1]
 
-    def feature_saturated_blue(self, video):
-        hist, _ = video.get_b_histogram()
+    def feature_frame_saturated_blue(self, video, point):
+        hist, _ = video.get_histogram(point, "b")
         return hist[-1]
 
-    def feature_zero_blue(self, video):
-        hist, _ = video.get_b_histogram()
+    def feature_frame_zero_blue(self, video, point):
+        hist, _ = video.get_histogram(point, "b")
         return hist[-1]
 
-    def feature_intensity_histogram_cdf_pearson(self, video):
-        hist, bins = video.get_y_histogram()
+    def feature_frame_intensity_histogram_cdf_pearson(self, video, point):
+        hist, bins = video.get_histogram(point, "y")
         cdf = np.cumsum(hist)
         pearson = np.corrcoef(cdf, bins[1:])
         return pearson[0][1]
 
-    def feature_saturated_intensity(self, video):
-        hist, _ = video.get_y_histogram()
+    def feature_frame_saturated_intensity(self, video, point):
+        hist, _ = video.get_histogram(point, "y")
         return hist[-1]
 
-    def feature_zero_intensity(self, video):
-        hist, _ = video.get_y_histogram()
+    def feature_frame_zero_intensity(self, video, point):
+        hist, _ = video.get_histogram(point, "y")
         return hist[-1]
-
-    def __wrapper(self, video, function_name, calc_points):
-        if function_name.startswith("feature_frame_"):
-            for time_point in calc_points:
-                return getattr(self, function_name)(video, time_point)
-        elif function_name.startswith("feature_"):
-            return getattr(self, function_name)(video)
 
     def __call__(self, video, calc_points=[1, -1]):
         return flatten(

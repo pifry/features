@@ -24,6 +24,19 @@ def rgb2y(frame):
     return np.dot(frame[..., :3], [0.2989, 0.5870, 0.1140])
 
 
+def get_channel(frame, point, channel):
+    if channel == "r":
+        return frame[point, :, :, 0]
+    elif channel == "g":
+        return frame[point, :, :, 1]
+    elif channel == "b":
+        return frame[point, :, :, 2]
+    elif channel == "y":
+        return rgb2y(frame[point, :, :, :])
+    else:
+        return None
+
+
 class Video:
     def __init__(self, path, name=None, score=None) -> None:
         self.path = path
@@ -31,10 +44,7 @@ class Video:
         self.score = score
         self.data = None
         self._fps = None
-        self.y_histogram = None
-        self.r_histogram = None
-        self.g_histogram = None
-        self.b_histogram = None
+        self.histograms = {}
 
     def __repr__(self) -> str:
         return f"{self.name}: {self.score} ({self.path})"
@@ -80,28 +90,15 @@ class Video:
         return self.data.shape[1]
 
     @need_to_load_data
-    def get_y_histogram(self):
-        if not isinstance(self.y_histogram, np.ndarray):
-            self.y_histogram = np.histogram(rgb2y(self.data[0, :, :, :]), bins=255)
-        return self.y_histogram
-
-    @need_to_load_data
-    def get_r_histogram(self):
-        if not isinstance(self.r_histogram, np.ndarray):
-            self.r_histogram = np.histogram(self.data[0, :, :, 0], bins=255)
-        return self.r_histogram
-
-    @need_to_load_data
-    def get_g_histogram(self):
-        if not isinstance(self.g_histogram, np.ndarray):
-            self.g_histogram = np.histogram(self.data[0, :, :, 1], bins=255)
-        return self.g_histogram
-
-    @need_to_load_data
-    def get_b_histogram(self):
-        if not isinstance(self.b_histogram, np.ndarray):
-            self.b_histogram = np.histogram(self.data[0, :, :, 2], bins=255)
-        return self.b_histogram
+    def get_histogram(self, point, channel):
+        key = f"{point}_{channel}"
+        if key in self.histograms:
+            return self.histograms[key]
+        else:
+            self.histograms[key] = np.histogram(
+                get_channel(self.data, point, channel), bins=255
+            )
+            return self.histograms[key]
 
     # @need_to_load_data
     # def get_psnr(self)
