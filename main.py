@@ -5,7 +5,7 @@ from dataset import KonVidDataset
 from tabulate import tabulate
 import argparse
 
-from features import Features
+from features_definition import Features
 
 
 def markdown_link(name, path):

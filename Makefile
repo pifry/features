@@ -3,7 +3,8 @@ SRC = \
 	dataset.py \
 	presentation.py \
 	video.py \
-	features.py
+	features.py \
+	features_definition.py
 
 BLACK = black
 
