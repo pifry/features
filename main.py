@@ -99,7 +99,9 @@ if __name__ == "__main__":
     start = time.time()
 
     if opts.j == 1:
-        results = tqdm.tqdm([worker((item, opts)) for item in dataset.items(opts.n)], total=opts.n)
+        results = tqdm.tqdm(
+            [worker((item, opts)) for item in dataset.items(opts.n)], total=opts.n
+        )
     else:
         with Pool(opts.j) as p:
             results = list(
