@@ -98,17 +98,20 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    with Pool(opts.j) as p:
-        results = list(
-            tqdm.tqdm(
-                p.imap(
-                    worker,
-                    ((item, opts) for item in dataset.items(opts.n)),
-                    chunksize=1,
-                ),
-                total=opts.n,
+    if opts.j == 1:
+        results = tqdm.tqdm([worker((item, opts)) for item in dataset.items(opts.n)], total=opts.n)
+    else:
+        with Pool(opts.j) as p:
+            results = list(
+                tqdm.tqdm(
+                    p.imap(
+                        worker,
+                        ((item, opts) for item in dataset.items(opts.n)),
+                        chunksize=1,
+                    ),
+                    total=opts.n,
+                )
             )
-        )
 
     end = time.time()
     print(f"Time elapsed: {end - start}")
