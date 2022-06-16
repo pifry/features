@@ -91,6 +91,9 @@ if __name__ == "__main__":
             "http://datasets.vqa.mmsp-kn.de/archives/k150kb_scores.csv",
         )  # ~2GB
 
+    if not opts.n:
+        opts.n = len(dataset)
+
     if opts.plots:
         os.makedirs(opts.plots, exist_ok=True)
 
