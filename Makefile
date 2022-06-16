@@ -7,7 +7,7 @@ SRC = \
 	features_plot.py \
 	frame_features.py \
 	global_features.py \
-	
+
 
 BLACK = black
 
@@ -17,7 +17,10 @@ format: $(SRC)
 check_formatting: $(SRC)
 	$(BLACK) --check $^
 
-clean:
-	rm *.html *.csv
+test:
+	python main.py -n 10 --ohtml output/result.html --ocsv output/result.csv --plots output/plots
 
-.PHONY: format check_formatting clean
+clean:
+	rm -r *.html *.csv output
+
+.PHONY: format check_formatting clean test
