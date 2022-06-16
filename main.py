@@ -12,6 +12,9 @@ from frame_features import FrameFeatures
 from global_features import GlobalFeatures
 from features_plot import PlotFeatures
 
+from multiprocessing import Pool
+import tqdm
+
 
 class Features(FeaturesControl, FrameFeatures, GlobalFeatures, PlotFeatures):
     pass
@@ -23,6 +26,12 @@ def markdown_link(name, path):
 
 def html_link(name, path):
     return f'<a href="{path}">{name}</a>'
+
+
+def normalize(results, key):
+    max_value = max([x[key] for x in results])
+    for row in results:
+        row[key] = row[key] / max_value
 
 
 def parse_args():
@@ -41,9 +50,29 @@ def parse_args():
         default=None,
     )
     parser.add_argument(
+        "-j",
+        type=int,
+        help="Number of concurent jobs",
+        default=1,
+    )
+    parser.add_argument(
         "--ds_name", help="Name od the dataset to process", default="k150kb"
     )
     return parser.parse_args()
+
+
+def worker(args):
+    video, opts = args
+    features = Features()
+
+    if opts.plots:
+        features.plot(Path(opts.plots), video)
+
+    return {
+        "filename": html_link(video.name, video.path),
+        "score": video.score,
+        **features(video),
+    }
 
 
 if __name__ == "__main__":
@@ -65,24 +94,28 @@ if __name__ == "__main__":
     if opts.plots:
         os.makedirs(opts.plots, exist_ok=True)
 
-    results = []
+    import time
 
-    for i, video in enumerate(dataset.items()):
+    start = time.time()
 
-        if i == opts.n:
-            break
-
-        features = Features()
-
-        results.append(
-            {
-                "filename": html_link(video.name, video.path),
-                "score": video.score,
-                **features(video),
-            }
+    with Pool(opts.j) as p:
+        results = list(
+            tqdm.tqdm(
+                p.imap(
+                    worker,
+                    ((item, opts) for item in dataset.items(opts.n)),
+                    chunksize=1,
+                ),
+                total=opts.n,
+            )
         )
-        if opts.plots:
-            features.plot(Path(opts.plots), video)
+
+    end = time.time()
+    print(f"Time elapsed: {end - start}")
+
+    for key in results[0].keys():
+        if not isinstance(results[0][key], str):
+            normalize(results, key)
 
     if opts.ohtml:
         with open(opts.ohtml, "w+") as file:

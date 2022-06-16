@@ -65,9 +65,9 @@ class Video:
         frame = np.flip(frame, axis=2)
         self.data = np.array([frame])
 
-        progress_bar = tqdm(
-            total=cap.get(cv2.CAP_PROP_FRAME_COUNT), unit="frames", unit_scale=True
-        )
+        # progress_bar = tqdm(
+        #    total=cap.get(cv2.CAP_PROP_FRAME_COUNT), unit="frames", unit_scale=True
+        # )
 
         while cap.isOpened():
             ret, frame = cap.read()
@@ -75,10 +75,10 @@ class Video:
             if ret:
                 frame = np.flip(frame, axis=3)
                 self.data = np.append(self.data, frame, axis=0)
-                progress_bar.update(1)
+                # progress_bar.update(1)
             else:
                 break
-        progress_bar.close()
+        # progress_bar.close()
         logging.info(f"Matrix {self.data.shape} loaded into memory")
 
     def get_intensity_data(self):

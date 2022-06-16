@@ -18,7 +18,7 @@ check_formatting: $(SRC)
 	$(BLACK) --check $^
 
 test:
-	python main.py -n 10 --ohtml output/result.html --ocsv output/result.csv --plots output/plots
+	python main.py -n 10 --ohtml output/result.html --ocsv output/result.csv --plots output/plots -j 5
 
 clean:
 	rm -r *.html *.csv output

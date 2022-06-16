@@ -40,9 +40,8 @@ class Dataset:
         for name, score, path in choices(self.movies_list, k=k):
             yield Video(path, name=name, score=score)
 
-    def items(self):
-        for name, score, path in self.movies_list:
-            print(name, score, path)
+    def items(self, n=-1):
+        for name, score, path in self.movies_list[:n]:
             yield Video(path, name=name, score=score)
 
 
