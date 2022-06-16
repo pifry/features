@@ -4,7 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
-from numpy.fft import fft
+from numpy.fft import fft, fft2
 
 from presentation import Animation
 
@@ -46,6 +46,7 @@ class Video:
         self.data = None
         self._fps = None
         self.histograms = {}
+        self.fft2 = {}
         self.intensity_data = None
         self.mean_intensity_in_time = None
         self.mean_intensity_fft = None
@@ -98,6 +99,12 @@ class Video:
         if not isinstance(self.mean_intensity_fft, np.ndarray):
             self.mean_intensity_fft = fft(self.get_mean_intensity_in_time())
         return self.mean_intensity_fft
+
+    def get_fft2(self, point):
+        key = str(point)
+        if key not in self.fft2:
+            self.fft2[key] = fft2(self.get_intensity_data()[point, ...])
+        return self.fft2[key]
 
     @need_to_load_data
     def get_fps(self):
