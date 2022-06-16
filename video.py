@@ -4,6 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+from numpy.fft import fft
 
 from presentation import Animation
 
@@ -47,6 +48,7 @@ class Video:
         self.histograms = {}
         self.intensity_data = None
         self.mean_intensity_in_time = None
+        self.mean_intensity_fft = None
 
     def __repr__(self) -> str:
         return f"{self.name}: {self.score} ({self.path})"
@@ -91,6 +93,11 @@ class Video:
                 self.get_intensity_data(), axis=(1, 2)
             )
         return self.mean_intensity_in_time
+
+    def get_mean_intensity_fft(self):
+        if not isinstance(self.mean_intensity_fft, np.ndarray):
+            self.mean_intensity_fft = fft(self.get_mean_intensity_in_time())
+        return self.mean_intensity_fft
 
     @need_to_load_data
     def get_fps(self):

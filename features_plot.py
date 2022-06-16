@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 
 class PlotFeatures:
     def figure_fft(self, video, ax):
-        f = fft(video.get_mean_intensity_in_time())
-        fft_real = np.real(f)
+        fft_real = np.real(video.get_mean_intensity_fft())
         x = np.linspace(-1, 1, len(fft_real))
         ax.plot(x, np.real(fft_real))
 

@@ -25,11 +25,9 @@ class GlobalFeatures:
         )
 
     def feature_low_frequency_of_intensity_changes(self, video):
-        f = fft(video.get_mean_intensity_in_time())
-        fft_real = np.real(f)
+        fft_real = np.real(video.get_mean_intensity_fft())
         return np.sum(fft_real[:10])
 
     def feature_high_frequency_of_intensity_changes(self, video):
-        f = fft(video.get_mean_intensity_in_time())
-        fft_real = np.real(f)
+        fft_real = np.real(video.get_mean_intensity_fft())
         return np.sum(fft_real[-10:])
