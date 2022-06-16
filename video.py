@@ -125,13 +125,11 @@ class Video:
     @need_to_load_data
     def get_histogram(self, point, channel):
         key = f"{point}_{channel}"
-        if key in self.histograms:
-            return self.histograms[key]
-        else:
+        if key not in self.histograms:
             self.histograms[key] = np.histogram(
                 get_channel(self.data, point, channel), bins=255
             )
-            return self.histograms[key]
+        return self.histograms[key]
 
     # @need_to_load_data
     # def get_psnr(self)
