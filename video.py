@@ -45,6 +45,8 @@ class Video:
         self.data = None
         self._fps = None
         self.histograms = {}
+        self.intensity_data = None
+        self.mean_intensity_in_time = None
 
     def __repr__(self) -> str:
         return f"{self.name}: {self.score} ({self.path})"
@@ -77,6 +79,19 @@ class Video:
         progress_bar.close()
         logging.info(f"Matrix {self.data.shape} loaded into memory")
 
+    def get_intensity_data(self):
+        if not isinstance(self.intensity_data, np.ndarray):
+            video_data = self.get_data()
+            self.intensity_data = rgb2y(video_data)
+        return self.intensity_data
+
+    def get_mean_intensity_in_time(self):
+        if not isinstance(self.mean_intensity_in_time, np.ndarray):
+            self.mean_intensity_in_time = np.mean(
+                self.get_intensity_data(), axis=(1, 2)
+            )
+        return self.mean_intensity_in_time
+
     @need_to_load_data
     def get_fps(self):
         return self._fps
@@ -88,6 +103,10 @@ class Video:
     @need_to_load_data
     def get_height(self):
         return self.data.shape[1]
+
+    @need_to_load_data
+    def get_data(self):
+        return self.data
 
     @need_to_load_data
     def get_histogram(self, point, channel):

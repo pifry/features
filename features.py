@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+
+
 def flatten(d):
     result = {}
     for key, value in d.items():
@@ -13,10 +16,25 @@ class FeaturesControl:
     """
     Implement new feature by defining method with name starting with feature_ that returns a scalar.
     If the method name starts with feature_frame_ it will be treated as frame based feature and calculated for each frame time defined by the parameter to __call__ method.
+    You can implement figure by defining mehtid that starts with figure_ and accept matplotlib axiex object
     """
 
     def __init__(self) -> None:
         self.features_dict = None
+
+    def plot(self, path, video):
+        plots = [
+            getattr(self, plot_name)
+            for plot_name in dir(self)
+            if plot_name.startswith("figure_")
+        ]
+        count = len(plots)
+        fig, ax = plt.subplots(count)
+        for i, plot in enumerate(plots):
+            plot(video, ax[i])
+            ax[i].set_title(plot.__name__[7:])
+        plt.savefig(path / (video.name[:-3] + ".png"))
+        plt.clf()
 
     def __call__(self, video, calc_points=[1, -1]):
         return flatten(

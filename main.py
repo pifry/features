@@ -1,11 +1,20 @@
 import logging
+import os
+from pathlib import Path
 
 from dataset import KonVidDataset
 
 from tabulate import tabulate
 import argparse
 
-from features_definition import Features
+from features import FeaturesControl
+from frame_features import FrameFeatures
+from global_features import GlobalFeatures
+from features_plot import PlotFeatures
+
+
+class Features(FeaturesControl, FrameFeatures, GlobalFeatures, PlotFeatures):
+    pass
 
 
 def markdown_link(name, path):
@@ -20,6 +29,11 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Features extractor")
     parser.add_argument("--ohtml", help="html output path", default=None)
     parser.add_argument("--ocsv", help="csv output path", default=None)
+    parser.add_argument(
+        "--plots",
+        help="path to save plots, as default no plots will be generated",
+        default=None,
+    )
     parser.add_argument(
         "-n",
         type=int,
@@ -48,6 +62,9 @@ if __name__ == "__main__":
             "http://datasets.vqa.mmsp-kn.de/archives/k150kb_scores.csv",
         )  # ~2GB
 
+    if opts.plots:
+        os.makedirs(opts.plots, exist_ok=True)
+
     results = []
 
     for i, video in enumerate(dataset.items()):
@@ -64,6 +81,8 @@ if __name__ == "__main__":
                 **features(video),
             }
         )
+        if opts.plots:
+            features.plot(Path(opts.plots), video)
 
     if opts.ohtml:
         with open(opts.ohtml, "w+") as file:

@@ -1,21 +1,12 @@
 import numpy as np
+from numpy.fft import fft
 
 from features import FeaturesControl
+from video import rgb2y
+import matplotlib.pyplot as plt
 
 
-class Features(FeaturesControl):
-    def feature_fps(self, video):
-        return video.get_fps()
-
-    def feature_width(self, video):
-        return video.get_width()
-
-    def feature_height(self, video):
-        return video.get_height()
-
-    def feature_ratio(self, video):
-        return video.get_width() / video.get_height()
-
+class FrameFeatures:
     def feature_frame_saturated_red(self, video, point):
         hist, _ = video.get_histogram(point, "r")
         return hist[-1]
@@ -71,3 +62,7 @@ class Features(FeaturesControl):
     def feature_frame_zero_intensity(self, video, point):
         hist, _ = video.get_histogram(point, "y")
         return hist[-1]
+
+    def feature_frame_intensity_dynamic(self, video, point):
+        intensity_frame = video.get_intensity_data()[point, ...]
+        return np.max(intensity_frame) - np.min(intensity_frame)

@@ -4,7 +4,10 @@ SRC = \
 	presentation.py \
 	video.py \
 	features.py \
-	features_definition.py
+	features_plot.py \
+	frame_features.py \
+	global_features.py \
+	
 
 BLACK = black
 
