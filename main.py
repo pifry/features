@@ -14,6 +14,7 @@ from features_plot import PlotFeatures
 
 from multiprocessing import Pool
 import tqdm
+import json
 
 
 class Features(FeaturesControl, FrameFeatures, GlobalFeatures, PlotFeatures):
@@ -38,6 +39,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Features extractor")
     parser.add_argument("--ohtml", help="html output path", default=None)
     parser.add_argument("--ocsv", help="csv output path", default=None)
+    parser.add_argument("--temp_path", help="Path for temporary files", default="tmp")
     parser.add_argument(
         "--plots",
         help="path to save plots, as default no plots will be generated",
@@ -68,6 +70,19 @@ def worker(args):
     if opts.plots:
         features.plot(Path(opts.plots), video)
 
+    result = {
+        "filename": html_link(video.name, video.path),
+        "score": video.score,
+        **features(video),
+    }
+
+    with open(Path(opts.temp_path) / "results.txt", "a") as temp_file:
+
+        for key, value in result.items():
+            print(f"{key}: {type(value)}")
+        json_data = json.dumps(result)
+        temp_file.write(json_data + "\n")
+
     return {
         "filename": html_link(video.name, video.path),
         "score": video.score,
@@ -96,6 +111,8 @@ if __name__ == "__main__":
 
     if opts.plots:
         os.makedirs(opts.plots, exist_ok=True)
+
+    os.makedirs(opts.temp_path, exist_ok=True)
 
     import time
 

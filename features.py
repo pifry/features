@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+from numpy import ndarray
+import numpy as np
 
 
 def flatten(d):
@@ -10,6 +12,13 @@ def flatten(d):
         else:
             result[key] = value
     return result
+
+
+def to_native_types(d):
+    for key in d:
+        if isinstance(d[key], np.int64) or isinstance(d[key], np.float64):
+            d[key] = d[key].item()
+    return d
 
 
 class FeaturesControl:
@@ -37,17 +46,19 @@ class FeaturesControl:
         plt.clf()
 
     def __call__(self, video, calc_points=[1, -1]):
-        return flatten(
-            {
-                feature_function_name[8:]: {
-                    str(timepoint): getattr(self, feature_function_name)(
-                        video, timepoint
-                    )
-                    for timepoint in calc_points
+        return to_native_types(
+            flatten(
+                {
+                    feature_function_name[8:]: {
+                        str(timepoint): getattr(self, feature_function_name)(
+                            video, timepoint
+                        )
+                        for timepoint in calc_points
+                    }
+                    if feature_function_name.startswith("feature_frame_")
+                    else getattr(self, feature_function_name)(video)
+                    for feature_function_name in dir(self)
+                    if feature_function_name.startswith("feature_")
                 }
-                if feature_function_name.startswith("feature_frame_")
-                else getattr(self, feature_function_name)(video)
-                for feature_function_name in dir(self)
-                if feature_function_name.startswith("feature_")
-            }
+            )
         )
